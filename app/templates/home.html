@@ -1,6 +1,73 @@
-<form action = "" method = "get">
-    
-    <label for="your_name">Your name: </label>
-    <input id="your_name" type="text" name="your_name">
-    <input type="submit" value="OK">
-</form>
+{% load static %}
+<link rel="stylesheet" type="text/css" href="{% static 'home/css/bootstrap.css' %}" />
+<html>
+
+<head>
+    <title>Home Page</title>
+</head>
+
+<body>
+    <h1 style="display: flex; flex-direction: column; align-items: center; font-size: 55px;" id="pageTitle" class="display-4">Nodes Data</h1>
+
+    <form class="container d-flex justify-content-center" action={% url 'index' %} method="get">
+        {% csrf_token %}
+        <div class="card" style="box-shadow: 3px 3px 3px 3px rgba(90, 90, 90, 0.28)">
+            <div class="card-body">
+                <p class="blockquote" style="font-size: 17px;">Please provide Node IDs for fetching data</p>
+                <div class="row">
+                    <div class="col-sm-12">
+                        <div id="nodes_div" class="form-group">
+                            <input id="nodes" type="text" placeholder="Node ID" name="nodes">
+                            <br><br>
+                            <input id="nodes" type="text" placeholder="Node ID" name="nodes">
+                            <br><br>
+                            <input id="nodes" type="text" placeholder="Node ID" name="nodes">
+                            <br><br>
+                            <input id="nodes" type="text" placeholder="Node ID" name="nodes">
+                            <br><br>
+                            <input id="nodes" type="text" placeholder="Node ID" name="nodes">
+                        </div>
+                    </div>
+                </div>
+                <button type="button" value="Add nodes" onclick="add()"
+                    class="btn btn-secondary">Add nodes</button><br><br>
+                <div class="col-sm-12">
+                    <label for="timeframe">Timeframe:</label>
+                    <select name="timeframe" id="timeframe">
+                        <option value="day">Last 1 Day</option>
+                        <option value="week">Last 1 week</option>
+                        <option value="month">Last 1 month</option>
+                        <option value="quater">Last 1 Quater</option>
+                    </select>
+                </div>
+                <button type="submit"
+                    class="btn btn-secondary btn-block confirm-button">Confirm</button>
+            </div>
+        </div>
+    </form>
+    <script>
+        function add() {
+            //Create an input type dynamically.
+            var br = document.createElement("div");
+            br.innerHTML = "<br/>";
+            var element = document.createElement("input");
+
+            //Assign different attributes to the element.
+            element.setAttribute("type", "text");
+            element.setAttribute("value", "");
+            element.setAttribute("name", "nodes");
+            element.setAttribute("placeholder", "Node ID")
+
+            // 'foobar' is the div id, where new fields are to be added
+            var foo = document.getElementById("nodes_div");
+
+            //Append the element in page (in span).
+            foo.appendChild(br);
+            foo.appendChild(element);
+            }
+
+    </script>
+</body>
+
+
+</html>
