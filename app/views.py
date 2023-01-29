@@ -16,7 +16,11 @@ def index(request):
     url = "https://rs01sv01.bnl.cos.lan:9002/dpa-api/report/" # <16 digit ID>
     for node in nodes:
         if node:
-            response = requests.get("https://api.shipwire.com/exec/FulfillmentServices.php")
+            user = ''
+            password = ''
+            session = requests.Session()
+            session.auth = (user, password)
+            response = session.get("https://rs01sv01.bnl.cos.lan:9002/dpa-api/report/")
             dict_data = xmltodict.parse(response.content)
             print(dict_data)
             # print(f"ID for node {node} : {dict_data['licenses']['license']['id']}")
