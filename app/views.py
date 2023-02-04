@@ -44,6 +44,8 @@ def index(request):
             xml.replace("<template>", template)
             xml.replace("<node_id>", node_id)
             xml.replace("<format_type>", file_format)
+            print(xml)
+            print(headers)
             r = session.post(url + node_id, data=xml, headers=headers, verify=False)
             print(r)
             print(r.content)
