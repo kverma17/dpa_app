@@ -7,11 +7,12 @@ import xmltodict
 def index(request):
     timeframe = request.GET.get('timeframe')
     file_format = request.GET.get('format')
+    print(file_format)
     template = request.GET.get('template')
     nodes = request.GET.getlist('nodes', '')
     url = "https://rs01sv01.bnl.cos.lan:9002/dpa-api/report/" # <16 digit ID>
     pdfs, file_output = [], "nodes.pdf"
-    headers = {'Content-Type': 'application/xml'} 
+    headers = {'Content-Type': 'application/vnd.emc.apollo-v1+xml'} 
     for node in nodes:
         if node:
             user = 'lcgjjyoth'
@@ -43,6 +44,7 @@ def index(request):
 </runReportParameters>"""
             xml.replace("<template>", template)
             xml.replace("<node_id>", node_id)
+            file_format = 'PDF'
             xml.replace("<format_type>", file_format)
             print(xml)
             print(headers)
