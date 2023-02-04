@@ -45,6 +45,8 @@ def index(request):
             xml.replace("<node_id>", node_id)
             xml.replace("<format_type>", file_format)
             r = requests.post(url + node_id, data=xml, headers=headers, verify=False)
+            print(r)
+            print(r.content)
             pdfs.append(r.content)
     if nodes:
         for content in pdfs:
