@@ -20,7 +20,6 @@ def index(request):
             session.auth = (user, password)
             response = session.get("https://rs01sv01.bnl.cos.lan:9002/apollo-api/nodes/?query=name%3d" + node, verify=False)
             dict_data = xmltodict.parse(response.content)
-            print(dict_data)
             node_id = dict_data['nodes']['node']['id']
             xml = """<runReportParameters>
 <report>
@@ -45,7 +44,7 @@ def index(request):
             xml.replace("<template>", template)
             xml.replace("<node_id>", node_id)
             xml.replace("<format_type>", file_format)
-            r = requests.post(url + node_id, data=xml, headers=headers)
+            r = requests.post(url + node_id, data=xml, headers=headers, verify=False)
             pdfs.append(r.content)
     if nodes:
         for content in pdfs:
