@@ -21,7 +21,7 @@ def index(request):
             response = session.get("https://rs01sv01.bnl.cos.lan:9002/apollo-api/nodes/?query=name%3d" + node, verify=False)
             dict_data = xmltodict.parse(response.content)
             print(dict_data)
-            node_id = dict_data['nodes']['node'][0]['id']
+            node_id = dict_data['nodes']['node']['id']
             xml = """<runReportParameters>
 <report>
 <name><template></name> <!-- Report template name -->
