@@ -34,7 +34,7 @@ def index(request):
 </nodes>
 <timeConstraints type="window">
 <window >
-<name>Last Month</name> <!-- time period name -->
+<name><timeframe></name> <!-- time period name -->
 </window>
 </timeConstraints>
 <formatParameters>
@@ -42,10 +42,11 @@ def index(request):
 <formatType><format_type></formatType>
 </formatParameters>
 </runReportParameters>"""
-            xml.replace("<template>", template)
-            xml.replace("<node_id>", node_id)
+            xml = xml.replace("<template>", template)
+            xml = xml.replace("<timeframe>", timeframe)
+            xml = xml.replace("<node_id>", node_id)
             file_format = 'PDF'
-            xml.replace("<format_type>", file_format)
+            xml = xml.replace("<format_type>", file_format)
             print(xml)
             print(headers)
             r = session.post(url + node_id, data=xml, headers=headers, verify=False)
