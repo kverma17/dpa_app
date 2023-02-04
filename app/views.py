@@ -46,11 +46,12 @@ def index(request):
             xml.replace("<format_type>", file_format)
             r = requests.post(url + node_id, data=xml, headers=headers)
             pdfs.append(r.content)
-    for content in pdfs:
-        open(file_output, 'wb').write(content)
-    FilePointer = open(file_output,"r")
-    response = HttpResponse(FilePointer,content_type='application/pdf')
-    response['Content-Disposition'] = f'attachment; filename={file_output}'
+    if nodes:
+        for content in pdfs:
+            open(file_output, 'wb').write(content)
+        FilePointer = open(file_output,"r")
+        response = HttpResponse(FilePointer,content_type='application/pdf')
+        response['Content-Disposition'] = f'attachment; filename={file_output}'
 
-    return response
+        return response
     return render(request, "home.html")
