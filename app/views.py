@@ -1,25 +1,36 @@
 from django.shortcuts import render
 from django.http import HttpResponse
 import requests
+import json
+from base64 import b64encode
 import xmltodict
+
+with open("cred.json", "r") as file:
+    credentials = json.load(file)
+    token = b64encode(f'{credentials["username"]}:{credentials["password"]}'.encode("utf-8")).decode("ascii")
+    auth =  f"Basic {token}"
 
 # Create your views here.
 def index(request):
     timeframe = request.GET.get('timeframe')
     file_format = request.GET.get('format')
-    print(file_format)
+    hostname = request.GET.get('hostname')
     template = request.GET.get('template')
+    execute = request.GET.get('execute', False)
     nodes = request.GET.getlist('nodes', '')
-    url = "https://rs01sv01.bnl.cos.lan:9002/dpa-api/report/" # <16 digit ID>
-    pdfs, file_output = [], "nodes.pdf"
-    headers = {'Content-Type': 'application/vnd.emc.apollo-v1+xml'} 
+    url = f"https://{hostname}:9002/dpa-api/report/" # <16 digit ID>
+    pdfs, file_output = [], "nodes.csv"
+    headers = {
+        "Content-Type": "application/vnd.emc.apollo-v1+xml",
+        "Authorization": auth
+    }
     for node in nodes:
         if node:
             user = 'lcgjjyoth'
             password = 'Vamshi@3108'
             session = requests.Session()
             session.auth = (user, password)
-            response = session.get("https://rs01sv01.bnl.cos.lan:9002/apollo-api/nodes/?query=name%3d" + node, verify=False)
+            response = session.get(f"https://{hostname}:9002/apollo-api/nodes/?query=name%3d" + node, verify=False)
             dict_data = xmltodict.parse(response.content)
             node_id = dict_data['nodes']['node']['id']
             xml = """<runReportParameters>
@@ -47,17 +58,36 @@ def index(request):
             xml = xml.replace("<node_id>", node_id)
             file_format = 'PDF'
             xml = xml.replace("<format_type>", file_format)
-            print(xml)
-            print(headers)
-            r = session.post(url + node_id, data=xml, headers=headers, verify=False)
-            print(r)
-            print(r.content)
-            pdfs.append(r.content)
-    if nodes:
+            
+            response = requests.post(
+                f"https://{hostname}:9002/dpa-api/report",
+                headers = {
+                    "Content-Type": "application/vnd.emc.apollo-v1+xml",
+                    "Authorization": auth
+                },
+                verify=False,
+                data=xml
+            )
+            output_data = xmltodict.parse(response.content)
+            output_link = output_data["report"]["link"]
+            print(output_link)
+            if execute:
+                response = requests.request(
+                    "GET",
+                    output_link,
+                    headers = {
+                        "Content-Type": "application/vnd.emc.apollo-v1+xml",
+                        "Authorization": 'Basic cmVzdHVzZXI6V2VsY29tZUAxMjM='
+                    },
+                    data = {},
+                    verify=False
+                )
+                pdfs.append(response.text)
+    if execute:
         for content in pdfs:
             open(file_output, 'wb').write(content)
         FilePointer = open(file_output,"r")
-        response = HttpResponse(FilePointer,content_type='application/pdf')
+        response = HttpResponse(FilePointer,content_type='application/csv')
         response['Content-Disposition'] = f'attachment; filename={file_output}'
 
         return response
